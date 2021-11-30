@@ -32,7 +32,7 @@ class RobotAgent(Agent):
 		self.hasBox = False
 		
 	def step(self):    
-		newPos = self.getNewPos()
+		newPos = self.getNewPosition()
 		# Si el robot no va cargando una caja
 		if not self.hasBox:
 			if (self.isBoxNearby(self.pos[0], self.pos[1])):
@@ -54,6 +54,7 @@ class RobotAgent(Agent):
 				self.model.boxesGrid[newPos[0]][newPos[1]] = 7
 				self.model.agentMovements += 1
 
+	# Helper para saber si hay alguna caja cerca del agente
 	def isBoxNearby(self, x, y):
 		if(self.model.validCoor(x+1, y) and self.model.boxesGrid[x+1][y] == 1):
 			self.model.boxesGrid[x+1][y] = 0
@@ -69,8 +70,8 @@ class RobotAgent(Agent):
 			return True
 		return False
 
-	def isStackNearby(self,x,y):
-		
+	# Helper para saber si hay algun rack o pila de cajas cerca
+	def isStackNearby(self, x, y):
 		if(self.model.validCoor(x+1, y) and self.model.boxesGrid[x+1][y] == -1 ):
 			self.model.boxesGrid[x+1][y] = 2
 			return True
@@ -84,7 +85,6 @@ class RobotAgent(Agent):
 			self.model.boxesGrid[x][y-1] = 2
 			return True
 			
-		# 
 		elif(self.model.validCoor(x+1, y) and self.model.boxesGrid[x+1][y] > 1 and self.model.boxesGrid[x+1][y] < 5 ):
 			self.model.boxesGrid[x+1][y] += 1
 			return True
@@ -99,10 +99,10 @@ class RobotAgent(Agent):
 			return True
 		return False
 
-	def getNewPos(self):
+	def getNewPosition(self):
 		# 0 derecha, 1 izqierda, 2 arriba, 3 abajo
-		arr =[0,1,2,3]
-		direction = random.choice(arr)
+		ways =[0,1,2,3]
+		direction = random.choice(ways)
 		
 		if direction == 0:
 			newPos = (self.pos[0]+1,self.pos[1])
@@ -115,6 +115,7 @@ class RobotAgent(Agent):
 
 		if self.model.validCoor(newPos[0], newPos[1]) and self.model.boxesGrid[newPos[0]][newPos[1]] == 0:
 			return newPos
+
 		return self.pos
 
 
@@ -123,7 +124,6 @@ class BoxModel(Model):
 		self.datacollector = DataCollector(model_reporters={"Grid": get_grid})
 		self.width = width
 		self.height = height
-		self.cells = width*height
 		self.numBoxes = numBoxes
 		self.numAgents = numAgents
 		self.agentMovements = 0  
@@ -133,6 +133,7 @@ class BoxModel(Model):
 		self.racks = math.ceil(self.numBoxes/5)
 		self.boxesLeft = self.numBoxes - self.racks
 
+		# Coloca todos los agentes en el modelo
 		self.placeObjects()
 
 
